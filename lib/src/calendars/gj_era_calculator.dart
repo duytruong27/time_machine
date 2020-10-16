@@ -2,7 +2,7 @@
 // Portions of this work are Copyright 2018 The Noda Time Authors. All rights reserved.
 // Use of this source code is governed by the Apache License 2.0, as found in the LICENSE.txt file.
 
-import 'package:meta/meta.dart';
+import 'package:meta/meta.dart' hide internal;
 
 import 'package:time_machine/src/time_machine_internal.dart';
 import 'package:time_machine/src/calendars/time_machine_calendars.dart';
@@ -24,7 +24,8 @@ class GJEraCalculator extends EraCalculator {
   void _validateEra(Era era) {
     if (era != Era.common && era != Era.beforeCommon) {
       Preconditions.checkNotNull(era, 'era');
-      Preconditions.checkArgument(false, 'era', "Era ${era.name} is not supported by this calendar; only BC and AD are supported");
+      Preconditions.checkArgument(false, 'era',
+          "Era ${era.name} is not supported by this calendar; only BC and AD are supported");
     }
   }
 
@@ -45,7 +46,8 @@ class GJEraCalculator extends EraCalculator {
   }
 
   @override
-  Era getEra(int absoluteYear) => absoluteYear > 0 ? Era.common : Era.beforeCommon;
+  Era getEra(int absoluteYear) =>
+      absoluteYear > 0 ? Era.common : Era.beforeCommon;
 
   @override
   int getMinYearOfEra(Era era) {

@@ -2,7 +2,7 @@
 // Portions of this work are Copyright 2018 The Noda Time Authors. All rights reserved.
 // Use of this source code is governed by the Apache License 2.0, as found in the LICENSE.txt file.
 
-import 'package:meta/meta.dart';
+import 'package:meta/meta.dart' hide internal;
 import 'package:time_machine/src/time_machine_internal.dart';
 
 // Note: documentation that refers to the LocalDateTime type within this class must use the fully-qualified
@@ -10,9 +10,14 @@ import 'package:time_machine/src/time_machine_internal.dart';
 
 @internal
 abstract class IZoneLocalMapping {
-  static ZoneLocalMapping newZoneLocalMapping
-      (DateTimeZone zone, LocalDateTime localDateTime, ZoneInterval earlyInterval, ZoneInterval lateInterval, int count) => 
-      ZoneLocalMapping._(zone, localDateTime, earlyInterval, lateInterval, count);
+  static ZoneLocalMapping newZoneLocalMapping(
+          DateTimeZone zone,
+          LocalDateTime localDateTime,
+          ZoneInterval earlyInterval,
+          ZoneInterval lateInterval,
+          int count) =>
+      ZoneLocalMapping._(
+          zone, localDateTime, earlyInterval, lateInterval, count);
 }
 
 /// The result of mapping a [LocalDateTime] within a time zone, i.e. finding out
@@ -76,7 +81,8 @@ class ZoneLocalMapping {
   /// original local date and time.</value>
   final int count;
 
-  ZoneLocalMapping._(this.zone, this.localDateTime, this.earlyInterval, this.lateInterval, this.count) {
+  ZoneLocalMapping._(this.zone, this.localDateTime, this.earlyInterval,
+      this.lateInterval, this.count) {
     Preconditions.debugCheckNotNull(zone, 'zone');
     Preconditions.debugCheckNotNull(earlyInterval, 'earlyInterval');
     Preconditions.debugCheckNotNull(lateInterval, 'lateInterval');
@@ -96,8 +102,7 @@ class ZoneLocalMapping {
       case 1:
         return _buildZonedDateTime(earlyInterval);
       case 2:
-        throw AmbiguousTimeError(
-            _buildZonedDateTime(earlyInterval),
+        throw AmbiguousTimeError(_buildZonedDateTime(earlyInterval),
             _buildZonedDateTime(lateInterval));
       default:
         throw StateError("Can't happen");
@@ -144,5 +149,6 @@ class ZoneLocalMapping {
   }
 
   ZonedDateTime _buildZonedDateTime(ZoneInterval interval) =>
-      IZonedDateTime.trusted(localDateTime.withOffset(interval.wallOffset), zone);
+      IZonedDateTime.trusted(
+          localDateTime.withOffset(interval.wallOffset), zone);
 }

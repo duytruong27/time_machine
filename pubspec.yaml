@@ -11,7 +11,7 @@ environment:
 # Verify flutter_test dependency compatibility first before updating any constraints
 # https://github.com/flutter/flutter/blob/master/packages/flutter_test/pubspec.yaml
 dependencies:
-  meta: "^1.1.7"
+  meta: 1.3.0-nullsafety.4
 #  quiver_hashcode: "^1.0.0"
 #  collection: "^1.14.10"
   collection: "^1.14.11"

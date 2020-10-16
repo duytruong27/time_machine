@@ -2,7 +2,7 @@
 // Portions of this work are Copyright 2018 The Noda Time Authors. All rights reserved.
 // Use of this source code is governed by the Apache License 2.0, as found in the LICENSE.txt file.
 
-import 'package:meta/meta.dart';
+import 'package:meta/meta.dart' hide internal;
 
 import 'package:time_machine/src/time_machine_internal.dart';
 import 'package:time_machine/src/utility/time_machine_utilities.dart';
@@ -11,8 +11,7 @@ import 'package:time_machine/src/timezones/time_machine_timezones.dart';
 /// A location entry generated from the 'zone.tab' file in a TZDB release. This can be used to provide
 /// users with a choice of time zone, although it is not internationalized.
 @immutable
-class TzdbZoneLocation
-{
+class TzdbZoneLocation {
   final int _latitudeSeconds, _longitudeSeconds;
 
   /// Gets the latitude in degrees; positive for North, negative for South.
@@ -43,7 +42,8 @@ class TzdbZoneLocation
   final String comment;
 
   // TzdbZone1970Location._(this.Comment, this.Countries, this.latitudeSeconds, this.longitudeSeconds, this.ZoneId);
-  TzdbZoneLocation._(this.comment, this.countryCode, this.countryName, this._latitudeSeconds, this._longitudeSeconds, this.zoneId);
+  TzdbZoneLocation._(this.comment, this.countryCode, this.countryName,
+      this._latitudeSeconds, this._longitudeSeconds, this.zoneId);
 
   /// Creates a new location.
   ///
@@ -57,22 +57,27 @@ class TzdbZoneLocation
   /// [zoneId]: Time zone identifier of the location. Must not be null.
   /// [comment]: Optional comment. Must not be null, but may be empty.
   /// [ArgumentOutOfRangeException]: The latitude or longitude is invalid.
-  factory TzdbZoneLocation(int latitudeSeconds, int longitudeSeconds, String countryName, String countryCode, String zoneId, String comment)
-  {
-    Preconditions.checkArgumentRange('latitudeSeconds', latitudeSeconds, -90 * 3600, 90 * 3600);
-    Preconditions.checkArgumentRange('longitudeSeconds', longitudeSeconds, -180 * 3600, 180 * 3600);
+  factory TzdbZoneLocation(int latitudeSeconds, int longitudeSeconds,
+      String countryName, String countryCode, String zoneId, String comment) {
+    Preconditions.checkArgumentRange(
+        'latitudeSeconds', latitudeSeconds, -90 * 3600, 90 * 3600);
+    Preconditions.checkArgumentRange(
+        'longitudeSeconds', longitudeSeconds, -180 * 3600, 180 * 3600);
     var CountryName = Preconditions.checkNotNull(countryName, 'countryName');
     var CountryCode = Preconditions.checkNotNull(countryCode, 'countryCode');
-    Preconditions.checkArgument(CountryName.length > 0, 'countryName', "Country name cannot be empty");
-    Preconditions.checkArgument(CountryCode.length == 2, 'countryCode', "Country code must be two characters");
+    Preconditions.checkArgument(
+        CountryName.length > 0, 'countryName', "Country name cannot be empty");
+    Preconditions.checkArgument(CountryCode.length == 2, 'countryCode',
+        "Country code must be two characters");
     var ZoneId = Preconditions.checkNotNull(zoneId, 'zoneId');
     var Comment = Preconditions.checkNotNull(comment, 'comment');
 
-    return TzdbZoneLocation._(Comment, CountryCode, CountryName, latitudeSeconds, longitudeSeconds, ZoneId);
+    return TzdbZoneLocation._(Comment, CountryCode, CountryName,
+        latitudeSeconds, longitudeSeconds, ZoneId);
   }
 
-  @internal void write(IDateTimeZoneWriter writer)
-  {
+  @internal
+  void write(IDateTimeZoneWriter writer) {
     writer.writeInt32(_latitudeSeconds);
     writer.writeInt32(_longitudeSeconds);
     writer.writeString(countryName);
@@ -81,7 +86,8 @@ class TzdbZoneLocation
     writer.writeString(comment);
   }
 
-  @internal static TzdbZoneLocation read(DateTimeZoneReader reader) {
+  @internal
+  static TzdbZoneLocation read(DateTimeZoneReader reader) {
     int latitudeSeconds = reader.readInt32(); // reader.ReadSignedCount();
     int longitudeSeconds = reader.readInt32(); // reader.ReadSignedCount();
     String countryName = reader.readString();
@@ -91,9 +97,9 @@ class TzdbZoneLocation
     // We could duplicate the validation, but there's no good reason to. It's odd
     // to catch ArgumentException, but we're in pretty tight control of what's going on here.
     try {
-      return TzdbZoneLocation(latitudeSeconds, longitudeSeconds, countryName, countryCode, zoneId, comment);
-    }
-    on ArgumentError catch (e) {
+      return TzdbZoneLocation(latitudeSeconds, longitudeSeconds, countryName,
+          countryCode, zoneId, comment);
+    } on ArgumentError catch (e) {
       throw InvalidTimeDataError('Invalid zone location data in stream', e);
     }
   }

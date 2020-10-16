@@ -4,7 +4,7 @@
 
 import 'dart:async';
 
-import 'package:meta/meta.dart';
+import 'package:meta/meta.dart' hide internal;
 
 import 'package:time_machine/src/time_machine_internal.dart';
 import 'package:time_machine/src/utility/time_machine_utilities.dart';
@@ -48,24 +48,28 @@ class DateTimeZoneCache extends DateTimeZoneProvider {
     var VersionId = await source.versionId;
 
     if (VersionId == null) {
-      throw InvalidDateTimeZoneSourceError('Source-returned version ID was null');
+      throw InvalidDateTimeZoneSourceError(
+          'Source-returned version ID was null');
     }
 
     var providerIds = await source.getIds();
     if (providerIds == null) {
-      throw InvalidDateTimeZoneSourceError('Source-returned ID sequence was null');
+      throw InvalidDateTimeZoneSourceError(
+          'Source-returned ID sequence was null');
     }
 
     var idList = List<String>.from(providerIds);
     // todo: a gentler 'null' okay sorter?
-    idList.sort((a, b) => a?.compareTo(b ?? '')); // sort(StringComparer.Ordinal);
+    idList
+        .sort((a, b) => a?.compareTo(b ?? '')); // sort(StringComparer.Ordinal);
     var ids = List<String>.from(idList);
 
     var cache = DateTimeZoneCache._(source, ids, VersionId);
     // Populate the dictionary with null values meaning "the ID is valid, we haven't fetched the zone yet".
     for (String id in ids) {
       if (id == null) {
-        throw InvalidDateTimeZoneSourceError('Source-returned ID sequence contained a null reference');
+        throw InvalidDateTimeZoneSourceError(
+            'Source-returned ID sequence contained a null reference');
       }
       cache._timeZoneMap[id] = null;
     }
@@ -76,7 +80,8 @@ class DateTimeZoneCache extends DateTimeZoneProvider {
   Future<DateTimeZone> getSystemDefault() async {
     String id = _source.systemDefaultId;
     if (id == null) {
-      throw DateTimeZoneNotFoundError('System default time zone is unknown to source $versionId');
+      throw DateTimeZoneNotFoundError(
+          'System default time zone is unknown to source $versionId');
     }
     return await this[id];
   }
@@ -84,7 +89,8 @@ class DateTimeZoneCache extends DateTimeZoneProvider {
   DateTimeZone getCachedSystemDefault() {
     String id = _source.systemDefaultId;
     if (id == null) {
-      throw DateTimeZoneNotFoundError('System default time zone is unknown to source $versionId');
+      throw DateTimeZoneNotFoundError(
+          'System default time zone is unknown to source $versionId');
     }
     return getDateTimeZoneSync(id);
   }
@@ -92,12 +98,14 @@ class DateTimeZoneCache extends DateTimeZoneProvider {
   /// <inheritdoc />
   Future<DateTimeZone> getZoneOrNull(String id) async {
     Preconditions.checkNotNull(id, 'id');
-    return (await _getZoneFromSourceOrNull(id)) ?? FixedDateTimeZone.getFixedZoneOrNull(id);
+    return (await _getZoneFromSourceOrNull(id)) ??
+        FixedDateTimeZone.getFixedZoneOrNull(id);
   }
 
   DateTimeZone getCachedZoneOrNull(String id) {
     Preconditions.checkNotNull(id, 'id');
-    return _getCachedZoneFromSourceOrNull(id) ?? FixedDateTimeZone.getFixedZoneOrNull(id);
+    return _getCachedZoneFromSourceOrNull(id) ??
+        FixedDateTimeZone.getFixedZoneOrNull(id);
   }
 
   Future<DateTimeZone> _getZoneFromSourceOrNull(String id) async {
@@ -142,7 +150,8 @@ class DateTimeZoneCache extends DateTimeZoneProvider {
   Future<DateTimeZone> operator [](String id) async {
     var zone = await getZoneOrNull(id);
     if (zone == null) {
-      throw DateTimeZoneNotFoundError('Time zone $id is unknown to source $versionId');
+      throw DateTimeZoneNotFoundError(
+          'Time zone $id is unknown to source $versionId');
     }
     return zone;
   }
@@ -150,9 +159,9 @@ class DateTimeZoneCache extends DateTimeZoneProvider {
   DateTimeZone getDateTimeZoneSync(String id) {
     var zone = getCachedZoneOrNull(id);
     if (zone == null) {
-      throw DateTimeZoneNotFoundError('Time zone $id is unknown or unavailable synchronously to source $versionId');
+      throw DateTimeZoneNotFoundError(
+          'Time zone $id is unknown or unavailable synchronously to source $versionId');
     }
     return zone;
   }
 }
-

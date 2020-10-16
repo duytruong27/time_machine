@@ -2,7 +2,7 @@
 // Portions of this work are Copyright 2018 The Noda Time Authors. All rights reserved.
 // Use of this source code is governed by the Apache License 2.0, as found in the LICENSE.txt file.
 
-import 'package:meta/meta.dart';
+import 'package:meta/meta.dart' hide internal;
 
 import 'package:time_machine/src/time_machine_internal.dart';
 import 'package:time_machine/src/utility/time_machine_utilities.dart';
@@ -19,7 +19,8 @@ class PeriodPattern implements IPattern<Period> {
   ///
   /// Pattern which uses the normal ISO format for all the supported ISO
   /// fields, but extends the time part with 's' for milliseconds, "t" for ticks and "n" for nanoseconds.
-  static final PeriodPattern roundtrip = PeriodPattern._(_RoundtripPatternImpl());
+  static final PeriodPattern roundtrip =
+      PeriodPattern._(_RoundtripPatternImpl());
 
   /// A 'normalizing' pattern which abides by the ISO-8601 duration format as far as possible.
   /// Weeks are added to the number of days (after multiplying by 7). Time units are normalized
@@ -31,11 +32,13 @@ class PeriodPattern implements IPattern<Period> {
   /// if the period contains more than [System.Int64.MaxValue] ticks when the
   /// combined weeks/days/time portions are considered. Such a period could never
   /// be useful anyway, however.
-  static final PeriodPattern normalizingIso = PeriodPattern._(_NormalizingIsoPatternImpl());
+  static final PeriodPattern normalizingIso =
+      PeriodPattern._(_NormalizingIsoPatternImpl());
 
   final IPattern<Period> _pattern;
 
-  PeriodPattern._(IPattern<Period> pattern) : this._pattern = Preconditions.checkNotNull(pattern, 'pattern');
+  PeriodPattern._(IPattern<Period> pattern)
+      : this._pattern = Preconditions.checkNotNull(pattern, 'pattern');
 
   /// Parses the given text value according to the rules of this pattern.
   ///
@@ -61,7 +64,8 @@ class PeriodPattern implements IPattern<Period> {
   /// * [builder]: The `StringBuffer` to append to.
   ///
   /// Returns: The builder passed in as [builder].
-  StringBuffer appendFormat(Period value, StringBuffer builder) => _pattern.appendFormat(value, builder);
+  StringBuffer appendFormat(Period value, StringBuffer builder) =>
+      _pattern.appendFormat(value, builder);
 
   static void _appendValue(StringBuffer builder, int value, String suffix) {
     // Avoid having a load of conditions in the calling code by checking here
@@ -72,14 +76,20 @@ class PeriodPattern implements IPattern<Period> {
     builder.write(suffix);
   }
 
-  static ParseResult<Period> _invalidUnit(ValueCursor cursor, String unitCharacter) =>
-      IParseResult.forInvalidValue<Period>(cursor, TextErrorMessages.invalidUnitSpecifier, [unitCharacter]);
+  static ParseResult<Period> _invalidUnit(
+          ValueCursor cursor, String unitCharacter) =>
+      IParseResult.forInvalidValue<Period>(
+          cursor, TextErrorMessages.invalidUnitSpecifier, [unitCharacter]);
 
-  static ParseResult<Period> _repeatedUnit(ValueCursor cursor, String unitCharacter) =>
-      IParseResult.forInvalidValue<Period>(cursor, TextErrorMessages.repeatedUnitSpecifier, [unitCharacter]);
+  static ParseResult<Period> _repeatedUnit(
+          ValueCursor cursor, String unitCharacter) =>
+      IParseResult.forInvalidValue<Period>(
+          cursor, TextErrorMessages.repeatedUnitSpecifier, [unitCharacter]);
 
-  static ParseResult<Period> _misplacedUnit(ValueCursor cursor, String unitCharacter) =>
-      IParseResult.forInvalidValue<Period>(cursor, TextErrorMessages.misplacedUnitSpecifier, [unitCharacter]);
+  static ParseResult<Period> _misplacedUnit(
+          ValueCursor cursor, String unitCharacter) =>
+      IParseResult.forInvalidValue<Period>(
+          cursor, TextErrorMessages.misplacedUnitSpecifier, [unitCharacter]);
 }
 
 class _RoundtripPatternImpl implements IPattern<Period> {
@@ -297,9 +307,14 @@ class _NormalizingIsoPatternImpl implements IPattern<Period> {
         if (negative) {
           totalNanoseconds = -totalNanoseconds;
         }
-        builder.milliseconds = arithmeticMod(totalNanoseconds ~/ TimeConstants.nanosecondsPerMillisecond, TimeConstants.millisecondsPerSecond);
-        builder.microseconds = arithmeticMod(totalNanoseconds ~/ TimeConstants.nanosecondsPerMicrosecond, TimeConstants.microsecondsPerMillisecond);
-        builder.nanoseconds = arithmeticMod(totalNanoseconds, TimeConstants.nanosecondsPerMicrosecond);
+        builder.milliseconds = arithmeticMod(
+            totalNanoseconds ~/ TimeConstants.nanosecondsPerMillisecond,
+            TimeConstants.millisecondsPerSecond);
+        builder.microseconds = arithmeticMod(
+            totalNanoseconds ~/ TimeConstants.nanosecondsPerMicrosecond,
+            TimeConstants.microsecondsPerMillisecond);
+        builder.nanoseconds = arithmeticMod(
+            totalNanoseconds, TimeConstants.nanosecondsPerMicrosecond);
 
         if (valueCursor.current != 'S') {
           return IParseResult.mismatchedCharacter<Period>(valueCursor, 'S');
@@ -314,7 +329,8 @@ class _NormalizingIsoPatternImpl implements IPattern<Period> {
       unitsSoFar |= unit;
     }
     if (unitsSoFar.value == 0) {
-      return IParseResult.forInvalidValue<Period>(valueCursor, TextErrorMessages.emptyPeriod);
+      return IParseResult.forInvalidValue<Period>(
+          valueCursor, TextErrorMessages.emptyPeriod);
     }
     return ParseResult.forValue<Period>(builder.build());
   }
@@ -339,7 +355,10 @@ class _NormalizingIsoPatternImpl implements IPattern<Period> {
       builder.write('T');
       PeriodPattern._appendValue(builder, value.hours, 'H');
       PeriodPattern._appendValue(builder, value.minutes, 'M');
-      int nanoseconds = value.milliseconds * TimeConstants.nanosecondsPerMillisecond + value.microseconds * TimeConstants.nanosecondsPerMicrosecond + value.nanoseconds;
+      int nanoseconds =
+          value.milliseconds * TimeConstants.nanosecondsPerMillisecond +
+              value.microseconds * TimeConstants.nanosecondsPerMicrosecond +
+              value.nanoseconds;
       int seconds = value.seconds;
       if (nanoseconds != 0 || seconds != 0) {
         if (nanoseconds < 0 || seconds < 0) {

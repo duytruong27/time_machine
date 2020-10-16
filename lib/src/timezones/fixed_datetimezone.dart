@@ -2,7 +2,7 @@
 // Portions of this work are Copyright 2018 The Noda Time Authors. All rights reserved.
 // Use of this source code is governed by the Apache License 2.0, as found in the LICENSE.txt file.
 
-import 'package:meta/meta.dart';
+import 'package:meta/meta.dart' hide internal;
 // import 'package:quiver_hashcode/hashcode.dart';
 
 import 'package:time_machine/src/time_machine_internal.dart';
@@ -24,7 +24,8 @@ class FixedDateTimeZone extends DateTimeZone {
   ///
   /// The ID and name (for the [ZoneInterval]) are generated based on the offset.
   /// [offset]: The [Offset] from UTC.
-  FixedDateTimeZone.forOffset(Offset offset) : this.forIdOffset(_makeId(offset), offset);
+  FixedDateTimeZone.forOffset(Offset offset)
+      : this.forIdOffset(_makeId(offset), offset);
   // todo: consider merging these constructors?
 
   /// Initializes a new instance of the [FixedDateTimeZone] class.
@@ -32,7 +33,8 @@ class FixedDateTimeZone extends DateTimeZone {
   /// The name (for the [ZoneInterval]) is deemed to be the same as the ID.
   /// [id]: The id.
   /// [offset]: The offset.
-  FixedDateTimeZone.forIdOffset(String id, Offset offset) : this(id, offset, id);
+  FixedDateTimeZone.forIdOffset(String id, Offset offset)
+      : this(id, offset, id);
 
   /// Initializes a new instance of the [FixedDateTimeZone] class.
   ///
@@ -41,7 +43,8 @@ class FixedDateTimeZone extends DateTimeZone {
   /// [offset]: The offset.
   /// [name]: The name to use in the sole [ZoneInterval] in this zone.
   FixedDateTimeZone(String id, Offset offset, String name)
-      : _interval = IZoneInterval.newZoneInterval(name, IInstant.beforeMinValue, IInstant.afterMaxValue, offset, Offset.zero),
+      : _interval = IZoneInterval.newZoneInterval(name, IInstant.beforeMinValue,
+            IInstant.afterMaxValue, offset, Offset.zero),
         super(id, true, offset, offset);
 
   /// Makes the id for this time zone. The format is 'UTC+/-Offset'.
@@ -73,8 +76,11 @@ class FixedDateTimeZone extends DateTimeZone {
       return DateTimeZone.utc;
     }
 
-    var parseResult = OffsetPattern.generalInvariant.parse(id.substring(IDateTimeZone.utcId.length));
-    return parseResult.success ? DateTimeZone.forOffset(parseResult.value) : null;
+    var parseResult = OffsetPattern.generalInvariant
+        .parse(id.substring(IDateTimeZone.utcId.length));
+    return parseResult.success
+        ? DateTimeZone.forOffset(parseResult.value)
+        : null;
   }
 
   /// Returns the fixed offset for this time zone.
@@ -88,11 +94,14 @@ class FixedDateTimeZone extends DateTimeZone {
   String get name => _interval.name;
 
   /// Gets the zone interval for the given instant. This implementation always returns the same interval.
-  @override ZoneInterval getZoneInterval(Instant instant) => _interval;
+  @override
+  ZoneInterval getZoneInterval(Instant instant) => _interval;
 
   /// @override for efficiency: we know we'll always have an unambiguous mapping for any LocalDateTime.
-  @override ZoneLocalMapping mapLocal(LocalDateTime localDateTime) =>
-      IZoneLocalMapping.newZoneLocalMapping(this, localDateTime, _interval, _interval, 1);
+  @override
+  ZoneLocalMapping mapLocal(LocalDateTime localDateTime) =>
+      IZoneLocalMapping.newZoneLocalMapping(
+          this, localDateTime, _interval, _interval, 1);
 
   /// Returns the offset from UTC, where a positive duration indicates that local time is later
   /// than UTC. In other words, local time = UTC + offset.
@@ -100,7 +109,8 @@ class FixedDateTimeZone extends DateTimeZone {
   /// [instant]: The instant for which to calculate the offset.
   ///
   /// The offset from UTC at the specified instant.
-  @override Offset getUtcOffset(Instant instant) => maxOffset;
+  @override
+  Offset getUtcOffset(Instant instant) => maxOffset;
 
   /// Writes the time zone to the specified writer.
   ///
@@ -134,17 +144,20 @@ class FixedDateTimeZone extends DateTimeZone {
   /// Returns: True if the specified value is a [FixedDateTimeZone] with the same name, ID and offset; otherwise, false.
   bool equals(FixedDateTimeZone other) =>
       other != null &&
-          offset == other.offset &&
-          id == other.id &&
-          name == other.name;
+      offset == other.offset &&
+      id == other.id &&
+      name == other.name;
 
-  bool operator ==(dynamic other) => other is FixedDateTimeZone && equals(other);
+  bool operator ==(dynamic other) =>
+      other is FixedDateTimeZone && equals(other);
 
   /// Computes the hash code for this instance.
   ///
   /// A 32-bit signed integer that is the hash code for this instance.
-  @override int get hashCode => hash3(offset, id, name);
+  @override
+  int get hashCode => hash3(offset, id, name);
 
   /// Returns a [String] that represents this instance.
-  @override String toString() => id;
+  @override
+  String toString() => id;
 }

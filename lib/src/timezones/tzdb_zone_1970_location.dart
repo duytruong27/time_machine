@@ -2,7 +2,7 @@
 // Portions of this work are Copyright 2018 The Noda Time Authors. All rights reserved.
 // Use of this source code is governed by the Apache License 2.0, as found in the LICENSE.txt file.
 
-import 'package:meta/meta.dart';
+import 'package:meta/meta.dart' hide internal;
 // import 'package:quiver_hashcode/hashcode.dart';
 
 import 'package:time_machine/src/time_machine_internal.dart';
@@ -46,7 +46,8 @@ class TzdbZone1970Location {
   /// This will return an empty string if no comment was provided in the original data.
   final String comment;
 
-  TzdbZone1970Location._(this.comment, this.countries, this._latitudeSeconds, this._longitudeSeconds, this.zoneId);
+  TzdbZone1970Location._(this.comment, this.countries, this._latitudeSeconds,
+      this._longitudeSeconds, this.zoneId);
 
   /// Creates a new location.
   ///
@@ -60,22 +61,34 @@ class TzdbZone1970Location {
   /// [zoneId]: Time zone identifier of the location. Must not be null.
   /// [comment]: Optional comment. Must not be null, but may be empty.
   /// [ArgumentOutOfRangeException]: The latitude or longitude is invalid.
-  factory TzdbZone1970Location(int latitudeSeconds, int longitudeSeconds,  List<TzdbZone1970LocationCountry> countries,  String zoneId, String comment) {
-    Preconditions.checkArgumentRange('latitudeSeconds', latitudeSeconds, -90 * 3600, 90 * 3600);
-    Preconditions.checkArgumentRange('longitudeSeconds', longitudeSeconds, -180 * 3600, 180 * 3600);
+  factory TzdbZone1970Location(
+      int latitudeSeconds,
+      int longitudeSeconds,
+      List<TzdbZone1970LocationCountry> countries,
+      String zoneId,
+      String comment) {
+    Preconditions.checkArgumentRange(
+        'latitudeSeconds', latitudeSeconds, -90 * 3600, 90 * 3600);
+    Preconditions.checkArgumentRange(
+        'longitudeSeconds', longitudeSeconds, -180 * 3600, 180 * 3600);
 
-    var Countries = List<TzdbZone1970LocationCountry>.unmodifiable(Preconditions.checkNotNull(countries, 'countries'));
-    Preconditions.checkArgument(Countries.length > 0, 'countries', "Collection must contain at least one entry");
+    var Countries = List<TzdbZone1970LocationCountry>.unmodifiable(
+        Preconditions.checkNotNull(countries, 'countries'));
+    Preconditions.checkArgument(Countries.length > 0, 'countries',
+        "Collection must contain at least one entry");
     for (var entry in Countries) {
-      Preconditions.checkArgument(entry != null, 'countries', "Collection must not contain null entries");
+      Preconditions.checkArgument(entry != null, 'countries',
+          "Collection must not contain null entries");
     }
     var ZoneId = Preconditions.checkNotNull(zoneId, 'zoneId');
     var Comment = Preconditions.checkNotNull(comment, 'comment');
 
-    return TzdbZone1970Location._(Comment, Countries, latitudeSeconds, longitudeSeconds, ZoneId);
+    return TzdbZone1970Location._(
+        Comment, Countries, latitudeSeconds, longitudeSeconds, ZoneId);
   }
 
-  @internal void write(IDateTimeZoneWriter writer) {
+  @internal
+  void write(IDateTimeZoneWriter writer) {
     // We considered writing out the ISO-3166 file as a separate field,
     // so we can reuse objects, but we don't actually waste very much space this way,
     // due to the string pool... and the increased code complexity isn't worth it.
@@ -93,14 +106,13 @@ class TzdbZone1970Location {
     writer.writeString(comment);
   }
 
-  @internal static TzdbZone1970Location read(DateTimeZoneReader reader)
-  {
+  @internal
+  static TzdbZone1970Location read(DateTimeZoneReader reader) {
     int latitudeSeconds = reader.readInt32();
     int longitudeSeconds = reader.readInt32();
     int countryCount = reader.read7BitEncodedInt();
     var countries = List<TzdbZone1970LocationCountry>();
-    for (int i = 0; i < countryCount; i++)
-    {
+    for (int i = 0; i < countryCount; i++) {
       String countryName = reader.readString();
       String countryCode = reader.readString();
       countries.add(TzdbZone1970LocationCountry(countryName, countryCode));
@@ -109,16 +121,14 @@ class TzdbZone1970Location {
     String comment = reader.readString();
     // We could duplicate the validation, but there's no good reason to. It's odd
     // to catch ArgumentException, but we're in pretty tight control of what's going on here.
-    try
-    {
-      return TzdbZone1970Location(latitudeSeconds, longitudeSeconds, countries, zoneId, comment);
-    }
-    on ArgumentError catch (e) {
+    try {
+      return TzdbZone1970Location(
+          latitudeSeconds, longitudeSeconds, countries, zoneId, comment);
+    } on ArgumentError catch (e) {
       throw InvalidTimeDataError('Invalid zone location data in stream', e);
     }
   }
 }
-
 
 /// A country represented within an entry in the 'zone1970.tab' file, with the English name
 /// mapped from the 'iso3166.tab' file.
@@ -137,21 +147,30 @@ class TzdbZone1970LocationCountry {
   TzdbZone1970LocationCountry(this.name, this.code) {
     Preconditions.checkNotNull(name, 'name');
     Preconditions.checkNotNull(code, 'code');
-    Preconditions.checkArgument(name.length > 0, 'name', "Country name cannot be empty");
-    Preconditions.checkArgument(code.length == 2, 'code', "Country code must be two characters");
+    Preconditions.checkArgument(
+        name.length > 0, 'name', "Country name cannot be empty");
+    Preconditions.checkArgument(
+        code.length == 2, 'code', "Country code must be two characters");
   }
 
   /// Compares countries for equality, by name and code.
   ///
   /// [other]: The country to compare with this one.
   /// Returns: `true` if the given country has the same name and code as this one; `false` otherwise.
-  bool equals(TzdbZone1970LocationCountry other) => other != null && other.code == code && other.name == name;
+  bool equals(TzdbZone1970LocationCountry other) =>
+      other != null && other.code == code && other.name == name;
 
-  @override operator==(dynamic other) => other is TzdbZone1970LocationCountry && other.code == code && other.name == name;
+  @override
+  operator ==(dynamic other) =>
+      other is TzdbZone1970LocationCountry &&
+      other.code == code &&
+      other.name == name;
 
   /// Returns a hash code for this country.
-  @override int get hashCode => hash2(name, code);
+  @override
+  int get hashCode => hash2(name, code);
 
   /// Returns a string representation of this country, including the code and name.
-  @override String toString() => '$code ($name)';
+  @override
+  String toString() => '$code ($name)';
 }

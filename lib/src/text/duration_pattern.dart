@@ -2,19 +2,19 @@
 // Portions of this work are Copyright 2018 The Noda Time Authors. All rights reserved.
 // Use of this source code is governed by the Apache License 2.0, as found in the LICENSE.txt file.
 
-import 'package:meta/meta.dart';
+import 'package:meta/meta.dart' hide internal;
 import 'package:time_machine/src/time_machine_internal.dart';
 
 // Nested class for ease of type initialization
 @internal
 abstract class TimePatterns {
-  static final TimePattern roundtripPatternImpl = TimePattern.createWithInvariantCulture('-D:hh:mm:ss.FFFFFFFFF');
+  static final TimePattern roundtripPatternImpl =
+      TimePattern.createWithInvariantCulture('-D:hh:mm:ss.FFFFFFFFF');
   static String format(Time time, String patternText, Culture culture) =>
-      TimeMachineFormatInfo
-        .getInstance(culture)
-        .timePatternParser
-        .parsePattern(patternText ?? roundtripPatternImpl.patternText)
-        .format(time);
+      TimeMachineFormatInfo.getInstance(culture)
+          .timePatternParser
+          .parsePattern(patternText ?? roundtripPatternImpl.patternText)
+          .format(time);
 }
 
 /// Represents a pattern for parsing and formatting [Time] values.
@@ -55,7 +55,8 @@ class TimePattern implements IPattern<Time> {
   /// * [builder]: The [StringBuffer] to append to.
   ///
   /// Returns: The builder passed in as [builder].
-  StringBuffer appendFormat(Time value, StringBuffer builder) => _pattern.appendFormat(value, builder);
+  StringBuffer appendFormat(Time value, StringBuffer builder) =>
+      _pattern.appendFormat(value, builder);
 
   // todo: should this be internal, or should all the other *_pattern classes creates' be private
   /// Creates a pattern for the given pattern text and format info.
@@ -66,7 +67,8 @@ class TimePattern implements IPattern<Time> {
   /// Returns: A pattern for parsing and formatting offsets.
   ///
   /// * [InvalidPatternError]: The pattern text was invalid.
-  static TimePattern _create(String patternText, TimeMachineFormatInfo formatInfo) {
+  static TimePattern _create(
+      String patternText, TimeMachineFormatInfo formatInfo) {
     Preconditions.checkNotNull(patternText, 'patternText');
     Preconditions.checkNotNull(formatInfo, 'formatInfo');
     var pattern = formatInfo.timePatternParser.parsePattern(patternText);

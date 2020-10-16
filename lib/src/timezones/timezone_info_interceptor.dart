@@ -5,7 +5,7 @@
 /*
 import 'dart:math' as math;
 
-import 'package:meta/meta.dart';
+import 'package:meta/meta.dart' hide internal;
 // import 'package:quiver_hashcode/hashcode.dart';
 
 import 'package:time_machine/src/time_machine_internal.dart';

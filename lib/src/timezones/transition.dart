@@ -2,7 +2,7 @@
 // Portions of this work are Copyright 2018 The Noda Time Authors. All rights reserved.
 // Use of this source code is governed by the Apache License 2.0, as found in the LICENSE.txt file.
 
-import 'package:meta/meta.dart';
+import 'package:meta/meta.dart' hide internal;
 // import 'package:quiver_hashcode/hashcode.dart';
 
 import 'package:time_machine/src/time_machine_internal.dart';
@@ -19,7 +19,8 @@ class Transition {
 
   Transition(this.instant, this.newOffset);
 
-  bool equals(Transition other) => instant == other.instant && newOffset == other.newOffset;
+  bool equals(Transition other) =>
+      instant == other.instant && newOffset == other.newOffset;
 
   /// Implements the operator == (equality).
   ///
@@ -32,8 +33,10 @@ class Transition {
   ///
   /// A hash code for this instance, suitable for use in hashing algorithms and data
   /// structures like a hash table.
-  @override int get hashCode => hash2(Instant, newOffset);
+  @override
+  int get hashCode => hash2(Instant, newOffset);
 
   /// Returns a [String] that represents this instance.
-  @override String toString() => 'Transition to $newOffset at $instant';
+  @override
+  String toString() => 'Transition to $newOffset at $instant';
 }

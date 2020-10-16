@@ -2,7 +2,7 @@
 // Portions of this work are Copyright 2018 The Noda Time Authors. All rights reserved.
 // Use of this source code is governed by the Apache License 2.0, as found in the LICENSE.txt file.
 
-import 'package:meta/meta.dart';
+import 'package:meta/meta.dart' hide internal;
 
 abstract class IEra {
   static String resourceIdentifier(Era era) => era._resourceIdentifier;
@@ -44,5 +44,6 @@ class Era {
   const Era._(this.name, this._resourceIdentifier);
 
   /// Returns the name of this era.
-  @override String toString() => name;
+  @override
+  String toString() => name;
 }
